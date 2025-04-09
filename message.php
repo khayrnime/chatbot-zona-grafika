@@ -1,34 +1,24 @@
 <?php
-// message.php
+// Baca JSON POST dari WhatsAuto
+$data = json_decode(file_get_contents('php://input'), true);
 
-// Biar browser tau balasannya JSON
-header('Content-Type: application/json');
+// Ambil message dan sender
+$message = isset($data['message']) ? strtolower(trim($data['message'])) : '';
+$sender = isset($data['sender']) ? $data['sender'] : '';
 
-// Baca input JSON dari POST
-$input = json_decode(file_get_contents('php://input'), true);
+$response = '';
 
-// Kalau ada datanya
-if ($input) {
-    $message = isset($input['message']) ? strtolower(trim($input['message'])) : '';
-    
-    // Cek isi message dan buat auto-reply
-    if ($message == 'halo') {
-        $reply = 'Hai juga! Ada yang bisa kami bantu?';
-    } elseif ($message == 'harga') {
-        $reply = 'Harga produk kami mulai dari 1000 per cup!';
-    } else {
-        $reply = 'Maaf, saya tidak mengerti. Ketik "halo" atau "harga".';
-    }
-
-    // Balikin response
-    echo json_encode([
-        'status' => 'success',
-        'reply' => $reply
-    ]);
+// Contoh Auto Reply
+if ($message === 'halo') {
+    $response = 'Hai juga! Ada yang bisa kami bantu?';
+} elseif ($message === 'harga') {
+    $response = 'Harga produk kami mulai dari 1000 per cup!';
 } else {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Data tidak valid'
-    ]);
+    $response = 'Maaf, saya tidak paham. Coba ketik "halo" atau "harga".';
 }
+
+// Balas dalam format JSON
+echo json_encode([
+    'reply' => $response
+]);
 ?>
